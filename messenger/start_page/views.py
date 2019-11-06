@@ -1,4 +1,5 @@
-from django.shortcuts import render, Http404, HttpResponseNotAllowed
+from django.shortcuts import render
+from django.http import Http404, HttpResponseNotAllowed
 
 
 def start(request):
