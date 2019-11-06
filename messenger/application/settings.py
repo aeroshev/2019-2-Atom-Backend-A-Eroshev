@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '_#=e!$d7r47)n#&dq+h^@9jvzhu@dagtstpekjv7)8%6_y3h6g'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'messenger.urls'
+ROOT_URLCONF = 'application.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'messenger.wsgi.application'
+WSGI_APPLICATION = 'application.wsgi.application'
 
 
 # Database
@@ -76,7 +76,11 @@ WSGI_APPLICATION = 'messenger.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': 'quack_db',
+	'USERNAME': 'quack',
+	'PASSWORD': 's3cr3t',
+	'HOST': '127.0.0.1',
+	'PORT': '5432',
     }
 }
 
@@ -118,7 +122,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
 
 try:
     from .local_settings import *
