@@ -12,6 +12,7 @@ def get_profile(request, user_id):
                             "nickname": "JP22"
     })
 
+
 def create_profile(request):
     if request.method != 'GET':
         return HttpResponseNotAllowed(permitted_method=['GET'])
