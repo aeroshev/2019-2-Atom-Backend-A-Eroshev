@@ -20,5 +20,7 @@ urlpatterns = [
     path('', include('start_page.urls')),
     path('admin/', admin.site.urls),
     path('chat/', include('chats.urls')),
-    path('user/', include('users.urls'))
+    path('user/', include('users.urls')),
+    path('attachment/', include('attachment.urls')),
+    path('sticker/', include('stickers.urls'))
 ]

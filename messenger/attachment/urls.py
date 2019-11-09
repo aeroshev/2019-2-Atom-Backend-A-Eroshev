@@ -3,5 +3,5 @@ from django.urls import path
 
 
 urlpatterns = [
-    path('', get_attach, name='get_attach'),
+    path('', get_attach, name='get_attach')
 ]
