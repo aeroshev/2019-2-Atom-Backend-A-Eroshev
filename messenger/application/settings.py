@@ -37,6 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users',
+    'attachment',
+    'chats',
+    'members',
+    'message'
 ]
 
 MIDDLEWARE = [
@@ -75,12 +80,12 @@ WSGI_APPLICATION = 'application.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'quack_db',
-	'USERNAME': 'quack',
-	'PASSWORD': 's3cr3t',
-	'HOST': '127.0.0.1',
-	'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'quck_db',
+        'USER': 'quack',
+        'PASSWORD': 's3cr3t',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 

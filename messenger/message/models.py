@@ -1,3 +1,8 @@
 from django.db import models
 
-# Create your models here.
+
+class Message(models.Model):
+    chat = models.ForeignKey('Chat', on_delete=models.CASCADE)
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    content = models.TextField()
+    added_at = models.DateTimeField()
