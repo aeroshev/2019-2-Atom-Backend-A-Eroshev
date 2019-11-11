@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Member(models.Model):
-    user = models.OneToOne('User', on_delete=models.CASCADE)
-    chat = models.ManyToMany('Chat')
+    user = models.OneToOneField('User', on_delete=models.CASCADE)
+    chat = models.ManyToManyField('Chat')
     # new_messages = ?
-    last_read_message = models.OneToOne('Message', on_delete=models.CASCADE)
+    last_read_message = models.OneToOneField('Message', on_delete=models.CASCADE)
