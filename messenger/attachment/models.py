@@ -6,9 +6,9 @@ class Attachment(models.Model):
         ('I', 'IMAGE'),
         ('F', 'FILE')
     )
-    chat = models.ForeignKey('Chat', on_delete=models.CASCADE)
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
-    message = models.ForeignKey('Message', on_delete=models.CASCADE)
+    chat = models.ForeignKey('chats.Chat', on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    message = models.ForeignKey('message.Message', on_delete=models.CASCADE)
     type = models.CharField(max_length=1, choices=TYPE_ATTACH, blank=False)
     url = models.URLField(blank=False)
 
