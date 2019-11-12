@@ -8,8 +8,5 @@ def chat_list(request):
     return JsonResponse({
                             "owner": "JP22",
                             "quantity_chats": 10,
-                            "contains": {
-
-                            }
                         })
 

@@ -12,7 +12,7 @@ def get_attach(request):
     except ValueError:
         return HttpResponseBadRequest("Bad request")
 
-    if id_msg < 0:
+    if id_msg <= 0:
         return HttpResponseBadRequest("Bad request")
 
     return JsonResponse({
