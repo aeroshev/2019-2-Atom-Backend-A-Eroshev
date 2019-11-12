@@ -11,3 +11,16 @@ class Message(models.Model):
 
     def __str__(self):
         return 'id ' + str(self.id)
+
+
+class Attachment(models.Model):
+    TYPE_ATTACH = (
+        ('I', 'IMAGE'),
+        ('F', 'FILE')
+    )
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    type = models.CharField('Type attachment', max_length=1, choices=TYPE_ATTACH, blank=False)
+    url = models.URLField('URL', blank=False)
+
+    def __str__(self):
+        return 'id ' + str(self.id)

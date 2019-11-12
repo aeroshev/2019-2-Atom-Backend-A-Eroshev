@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import User
 
 
 class Chat(models.Model):
@@ -8,3 +9,13 @@ class Chat(models.Model):
 
     def __str__(self):
         return 'id ' + str(self.id)
+
+
+class Member(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    last_read_message = models.TextField('Last read message')
+
+    def __str__(self):
+        return 'member ' + self.user
+
