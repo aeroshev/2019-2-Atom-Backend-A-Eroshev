@@ -1,4 +1,7 @@
 from django.db import models
+from chats.models import Chat
+from users.models import User
+from message.models import Message
 
 
 class Attachment(models.Model):
@@ -6,11 +9,11 @@ class Attachment(models.Model):
         ('I', 'IMAGE'),
         ('F', 'FILE')
     )
-    chat = models.ForeignKey('chats.Chat', on_delete=models.CASCADE)
-    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
-    message = models.ForeignKey('message.Message', on_delete=models.CASCADE)
-    type = models.CharField(max_length=1, choices=TYPE_ATTACH, blank=False)
-    url = models.URLField(blank=False)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    type = models.CharField('Type attachment', max_length=1, choices=TYPE_ATTACH, blank=False)
+    url = models.URLField('URL', blank=False)
 
     def __str__(self):
-        return 'Attachment_id: ' + self.attachment_id
+        return 'id ' + str(self.id)
