@@ -7,7 +7,7 @@ class Message(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField('Text of message', null=True, default='')
-    added_at = models.DateTimeField('Time published', auto_now_add=True, null=True)
+    added_at = models.DateTimeField('Time published', auto_now_add=True)
 
     def __str__(self):
         return 'id ' + str(self.id)
