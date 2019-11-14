@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponse
+from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponse, HttpResponseBadRequest
 
 
 def get_profile(request, user_id):
@@ -18,3 +18,22 @@ def create_profile(request):
         return HttpResponseNotAllowed(permitted_method=['GET'])
 
     return HttpResponse("Login new user")
+
+
+def get_contact(request):
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(permitted_method=['GET'])
+
+    id_usr = request.GET.get('usr', -1)
+
+    try:
+        id_usr = int(id_usr)
+    except ValueError:
+        return HttpResponseBadRequest("Bad request")
+
+    if id_usr <= 0:
+        return HttpResponseBadRequest("Bad request")
+
+    return JsonResponse({
+            "usr_list": ["1", "45", "12"]
+    })
