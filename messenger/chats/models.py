@@ -3,7 +3,7 @@ from users.models import User
 
 
 class Chat(models.Model):
-    title = models.CharField(max_length=128, blank=False)
+    title = models.CharField(max_length=128, blank=False, null=False, default='NoName')
     is_group_chat = models.BooleanField('Group chat', blank=False, default=False)
     last_message = models.TextField('Last message', null=True)
 
