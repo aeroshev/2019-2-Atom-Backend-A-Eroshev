@@ -13,7 +13,7 @@ class Chat(models.Model):
 
 class Member(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    chat = models.ManyToManyField(Chat)
     last_read_message = models.TextField('Last read message', null=True)
 
     def __str__(self):
