@@ -3,3 +3,6 @@ venv/
 *.swo
 *.swp
 /messenger/.idea
+TicTacToe_hw2/
+Hello_world.py
+mime.py

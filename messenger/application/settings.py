@@ -26,6 +26,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'users.User'
+
 
 # Application definition
 
@@ -38,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'chats',
-    'message'
+    'message',
 ]
 
 MIDDLEWARE = [
@@ -78,8 +80,8 @@ WSGI_APPLICATION = 'application.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'quck_db',
-        'USER': 'quack',
+        'NAME': 'messenger_db',
+        'USER': 'messenger',
         'PASSWORD': 's3cr3t',
         'HOST': '127.0.0.1',
         'PORT': '5432',
@@ -119,7 +121,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
@@ -129,3 +130,5 @@ try:
     from .local_settings import *
 except ImportError:
     pass
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']

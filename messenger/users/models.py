@@ -1,12 +1,10 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
-class User(models.Model):
-    first_name = models.CharField('First name', max_length=32, null=True)
-    last_name = models.CharField('Second name', max_length=64, null=True)
-    nick = models.CharField('Nickname', max_length=128, blank=False)
-    avatar = models.FilePathField('Path to avatar', null=True)
-    date_of_birthday = models.DateField('Date of birthday', null=True)
+class User(AbstractUser):
+    avatar = models.FilePathField('Avatar of user', null=True, blank=False, default='default.png')
+    date_of_birthday = models.DateField('Date of birthday', null=True, blank=False)
 
     def __str__(self):
-        return self.nick
+        return self.username
