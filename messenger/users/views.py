@@ -1,4 +1,7 @@
 from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponse, HttpResponseBadRequest
+from .models import User
+from .helper import to_json
+from json import dumps
 
 
 def get_profile(request, user_id):
@@ -20,20 +23,23 @@ def create_profile(request):
     return HttpResponse("Login new user")
 
 
-def get_contact(request):
-    if request.method != 'GET':
-        return HttpResponseNotAllowed(permitted_method=['GET'])
+def search(request):
+    if request.method == 'GET':
 
-    id_usr = request.GET.get('usr', -1)
+        nick = request.GET.get('nick')
 
-    try:
-        id_usr = int(id_usr)
-    except ValueError:
-        return HttpResponseBadRequest("Bad request")
+        if nick:
+            users = list(User.objects.filter(username__icontains=nick))
 
-    if id_usr <= 0:
-        return HttpResponseBadRequest("Bad request")
+            if users:
+                matched_users = []
 
-    return JsonResponse({
-            "usr_list": ["1", "45", "12"]
-    })
+                for user in users:
+                    matched_users.append(to_json(user))
+
+                return JsonResponse({'response': matched_users})
+            else:
+                return JsonResponse({'response': 'no have matched users'})
+
+    return HttpResponseBadRequest("Bad request")
+

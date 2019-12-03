@@ -7,10 +7,10 @@ class Chat(models.Model):
     is_group_chat = models.BooleanField('Group chat', null=False, blank=False, default=False)
     chat_avatar = models.FileField('Avatar of chat', null=False, blank=False, default='default.png')
     last_message = models.IntegerField('Id last message', null=True, blank=False)
-    # creator = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    creator = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return 'id ' + str(self.id)
+        return 'title ' + self.title
 
 
 class Member(models.Model):
@@ -20,5 +20,5 @@ class Member(models.Model):
     last_read_message = models.IntegerField('Id last read message', null=True, blank=False)
 
     def __str__(self):
-        return 'member ' + self.user
+        return 'user ' + self.user.username + ' in chat ' + self.chat.title
 

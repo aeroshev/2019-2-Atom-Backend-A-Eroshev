@@ -1,8 +1,9 @@
-from message.views import get_message, get_attach
+from message.views import add_message, read_message, get_list_messages
 from django.urls import path
 
 
 urlpatterns = [
-    path('', get_attach, name='get_attach'),
-    path('<int:message_id>/', get_message, name='get_message'),
+    path('', get_list_messages, name='get_list_messages'),
+    path('add/', add_message, name='add_message'),
+    path('read/', read_message, name='read_message')
 ]

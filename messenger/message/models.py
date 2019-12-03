@@ -9,6 +9,9 @@ class Message(models.Model):
     text = models.TextField('Text of message', null=True, blank=True, default='')
     added_at = models.DateTimeField('Time published', null=False, blank=False, auto_now_add=True)
 
+    class Meta:
+        ordering = ('-added_at',)
+
     def __str__(self):
         return 'id ' + str(self.id)
 
