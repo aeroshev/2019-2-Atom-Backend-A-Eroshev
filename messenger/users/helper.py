@@ -1,8 +1,8 @@
-import json
+from json import dumps
 
 
 def to_json(user):
-    return json.dumps({
+    return dumps({
         'last_login': user.last_login,
         'username': user.username,
         'first_name': user.first_name,

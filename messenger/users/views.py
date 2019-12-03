@@ -5,15 +5,16 @@ from json import dumps
 
 
 def get_profile(request, user_id):
-    if request.method != 'GET':
-        return HttpResponseNotAllowed(permitted_method=['GET'])
+    if request.method == 'GET':
 
-    return JsonResponse({
-                            "first_name": "John",
-                            "last_name": "Pitt",
-                            "date_of_birthday": 223453,
-                            "nickname": "JP22"
-    })
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return JsonResponse(dumps({'response': 'Failed'}), status=400, safe=False)
+
+        return JsonResponse(to_json(user), safe=False)
+
+    return HttpResponseNotAllowed(permitted_method=['GET'])
 
 
 def create_profile(request):
@@ -38,8 +39,8 @@ def search(request):
                     matched_users.append(to_json(user))
 
                 return JsonResponse({'response': matched_users})
-            else:
-                return JsonResponse({'response': 'no have matched users'})
+
+            return JsonResponse({'response': 'no have matched users'}, status=400)
 
     return HttpResponseBadRequest("Bad request")
 
