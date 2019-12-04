@@ -1,8 +1,7 @@
-from json import dumps
 
 
 def to_json(user):
-    return dumps({
+    return {
         'last_login': user.last_login,
         'username': user.username,
         'first_name': user.first_name,
@@ -11,4 +10,4 @@ def to_json(user):
         'is_active': user.is_active,
         'avatar': user.avatar,
         'date_of_birthday': user.date_of_birthday,
-    }, ensure_ascii=False)
+    }

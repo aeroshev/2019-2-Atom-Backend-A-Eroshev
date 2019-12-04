@@ -1,7 +1,6 @@
-from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.http import JsonResponse
 from .forms import AddMessageForm, ReadMessageForm
 from .helper import message_list
-from json import dumps
 
 
 # ---POST---
@@ -14,10 +13,10 @@ def add_message(request):
         try:
             id_usr = int(id_usr)
         except ValueError:
-            return HttpResponseBadRequest("Bad request")
+            return JsonResponse({'response': 'incorrect POST request'}, status=400)
 
         if id_usr <= 0:
-            return HttpResponseBadRequest("Bad request")
+            return JsonResponse({'response': 'incorrect POST request'}, status=400)
         # --------------------------------------------------------------
 
         form = AddMessageForm(request.POST, request.FILES, id_usr)
@@ -25,13 +24,13 @@ def add_message(request):
         if form.is_valid():
             message = form.save()
             if message:
-                return JsonResponse(dumps({'response': 'ok'}))
+                return JsonResponse({'response': 'ok'})
 
-            return JsonResponse(dumps({'response': 'Failed'}), status=400)
+            return JsonResponse({'response': 'Failed'}, status=400)
 
-        return JsonResponse(dumps({'error': form.errors}), status=400)
+        return JsonResponse({'error': form.errors}, status=400)
 
-    return HttpResponseNotAllowed(permitted_method=['POST'])
+    return JsonResponse({'response': 'permitted method POST'}, status=403)
 
 
 # ---POST---
@@ -44,23 +43,24 @@ def read_message(request):
         try:
             id_usr = int(id_usr)
         except ValueError:
-            return HttpResponseBadRequest("Bad request")
+            return JsonResponse({'response': 'incorrect POST request'}, status=400)
 
         if id_usr <= 0:
-            return HttpResponseBadRequest("Bad request")
+            return JsonResponse({'response': 'incorrect POST request'}, status=400)
         # --------------------------------------------------------------
 
         form = ReadMessageForm(request.POST, id_usr)
 
         if form.is_valid():
             status = form.save()
-            return JsonResponse(dumps({'response': 'OK' if status else 'Failed'}))
+            return JsonResponse({'response': 'OK' if status else 'Failed'})
 
-        return JsonResponse(dumps({'response': form.errors}), status=400)
+        return JsonResponse({'response': form.errors}, status=400)
 
-    return HttpResponseNotAllowed(permitted_method=['POST'])
+    return JsonResponse({'response': 'permitted method POST'}, status=403)
 
 
+# ---GET---
 def get_list_messages(request):
     if request.method == 'GET':
 
@@ -72,16 +72,16 @@ def get_list_messages(request):
             id_usr = int(id_usr)
             id_chat = int(id_chat)
         except ValueError:
-            return HttpResponseBadRequest("Bad request")
+            return JsonResponse({'response': 'incorrect GET request'}, status=400)
 
         if id_usr <= 0 or id_chat <= 0:
-            return HttpResponseBadRequest("Bad request")
+            return JsonResponse({'response': 'incorrect GET request'}, status=400)
         # --------------------------------------------------------------
         messages_list = message_list(id_chat, id_usr)
 
         if messages_list:
-            return JsonResponse(dumps({'response': messages_list}))
+            return JsonResponse({'response': messages_list})
 
-        return JsonResponse(dumps({'response': 'empty'}))
+        return JsonResponse({'response': 'empty'})
 
-    return HttpResponseNotAllowed(permitted_method=['GET'])
+    return JsonResponse({'response': 'permitted method GET'}, status=403)

@@ -1,7 +1,5 @@
 from chats.models import Member
 from .models import Message, Attachment
-from json import dumps
-from django.core.serializers.json import DjangoJSONEncoder
 
 
 def to_json(message, attachments):
@@ -12,11 +10,11 @@ def to_json(message, attachments):
             'attachment path': attachment.url
         })
 
-    return dumps({
+    return {
         'text': message.text,
         'added_at': message.added_at,
         'attachments': attach_list
-    }, ensure_ascii=False, cls=DjangoJSONEncoder)
+    }
 
 
 def message_list(chat_id, user_id):

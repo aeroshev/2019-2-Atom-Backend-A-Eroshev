@@ -1,8 +1,7 @@
-from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseBadRequest
+from django.http import JsonResponse
 from .forms import ChatForm
 from .helper import to_json
 from .models import Member
-from json import dumps
 
 
 def chat_list(request):
@@ -14,44 +13,44 @@ def chat_list(request):
         try:
             id_usr = int(id_usr)
         except ValueError:
-            return HttpResponseBadRequest("Bad request")
+            return JsonResponse({'response': 'incorrect GET request'}, status=400)
 
         if id_usr <= 0:
-            return HttpResponseBadRequest("Bad request")
+            return JsonResponse({'response': 'incorrect GET request'}, status=400)
         # --------------------------------------------------------------
 
-        consists_of_chats = Member.objects.filter(user=id_usr)
+        consists_of_chats = list(Member.objects.filter(user=id_usr))
 
         chats = []
         for member_in_chat in consists_of_chats:
-            chats.append(to_json(member_in_chat.chat, id_usr))
+            chats.append(to_json(member_in_chat.chat))
 
-        return JsonResponse(dumps({'response': chats}))
+        return JsonResponse({'response': chats})
 
-    return HttpResponseNotAllowed(permitted_method=['GET'])
+    return JsonResponse({'response': 'permitted method GET'}, stattus=403)
 
 
 def create_chat(request):
     if request.method == 'POST':
 
-        # validate_get_require-------------------------------------------
+        # validate_get_require-------------------------------------------?
         id_usr = request.GET.get('usr', -1)
 
         try:
             id_usr = int(id_usr)
         except ValueError:
-            return HttpResponseBadRequest("Bad request")
+            return JsonResponse({'response': 'incorrect POST request'}, status=400)
 
         if id_usr <= 0:
-            return HttpResponseBadRequest("Bad request")
+            return JsonResponse({'response': 'incorrect POST request'}, status=400)
         # --------------------------------------------------------------
 
         form = ChatForm(request.GET, id_usr)
 
         if form.is_valid():
             chat = form.save()
-            return JsonResponse(dumps({'response': to_json(chat, id_usr)}))
+            return JsonResponse({'response': to_json(chat)})
 
-        return JsonResponse(dumps({'error': form.errors}), status=400)
+        return JsonResponse({'error': form.errors}, status=400)
 
-    return HttpResponseNotAllowed(permitted_method=['POST'])
+    return JsonResponse({'response': 'permitted method POST'}, status=403)

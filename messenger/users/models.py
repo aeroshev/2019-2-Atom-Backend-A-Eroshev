@@ -7,4 +7,4 @@ class User(AbstractUser):
     date_of_birthday = models.DateField('Date of birthday', null=True, blank=False)
 
     def __str__(self):
-        return self.username
+        return str(self.id) + self.username

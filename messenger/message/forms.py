@@ -61,6 +61,8 @@ class ReadMessageForm(MessageForm):
         return clear_message_id
 
     def save(self):
+        status = False
+
         data = self.cleaned_data
         message_id = data['message_id']
         chat_id = data['chat']
@@ -70,13 +72,15 @@ class ReadMessageForm(MessageForm):
         try:
             read_message = Message.objects.get(id=message_id)
         except Message.DoesNotExist:
-            pass
+            status = False
 
         if read_message:
             try:
                 member = Member.objects.get(user=reader, chat=chat_id)
                 member.update(last_read_message=message_id)
-            except Member.DoesNotExist:
-                pass
 
-        return True
+                status = True
+            except Member.DoesNotExist:
+                status = False
+
+        return status
