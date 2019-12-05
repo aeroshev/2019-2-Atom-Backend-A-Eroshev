@@ -7,9 +7,10 @@ class ChatForm(forms.Form):
     title = forms.CharField(label='Chat title', max_length=128, required=True)
     is_group = forms.BooleanField(label='Group chat', required=False)
     avatar = forms.FileField(label='Chat avatar', required=False)
-    members = forms.ChoiceField(label='Members', required=False,
-                                choices=[tuple([user.username, user.first_name + ' ' + user.last_name]) for user in
-                                         list(User.objects.all())])
+    # members = forms.ModelChoiceField(label='Members', required=False,
+
+                                     #count <2 >20
+
 
     def __init__(self, get, user):
         super().__init__(get)

@@ -1,87 +1,54 @@
 from django.http import JsonResponse
+from  django.views.decorators.http import require_http_methods
 from .forms import AddMessageForm, ReadMessageForm
-from .helper import message_list
+from .models import Message, Attachment
 
 
-# ---POST---
+@require_http_methods(['POST'])
 def add_message(request):
-    if request.method == 'POST':
+    # POST-------------------------------
+    id_usr = request.GET.get('usr')
+    if not id_usr.isdigit():
+        return JsonResponse({'response': 'incorrect POST request'}, status=400)
+    # POST-------------------------------
 
-        # validate_get_require-------------------------------------------
-        id_usr = request.GET.get('usr', -1)
+    form = AddMessageForm(request.POST, request.FILES, id_usr)
 
-        try:
-            id_usr = int(id_usr)
-        except ValueError:
-            return JsonResponse({'response': 'incorrect POST request'}, status=400)
-
-        if id_usr <= 0:
-            return JsonResponse({'response': 'incorrect POST request'}, status=400)
-        # --------------------------------------------------------------
-
-        form = AddMessageForm(request.POST, request.FILES, id_usr)
-
-        if form.is_valid():
-            message = form.save()
-            if message:
-                return JsonResponse({'response': 'ok'})
-
-            return JsonResponse({'response': 'Failed'}, status=400)
-
-        return JsonResponse({'error': form.errors}, status=400)
-
-    return JsonResponse({'response': 'permitted method POST'}, status=403)
+    if form.is_valid():
+        message = form.save()
+        if message:
+            return JsonResponse({'response': 'ok'})
+        return JsonResponse({'response': 'Failed'}, status=400)
+    return JsonResponse({'error': form.errors}, status=400)
 
 
-# ---POST---
+@require_http_methods(['POST'])
 def read_message(request):
-    if request.method == 'POST':
+    # POST-------------------------------
+    id_usr = request.GET.get('usr')
+    if not id_usr.isdigit():
+        return JsonResponse({'response': 'incorrect POST request'}, status=400)
+    # POST-------------------------------
 
-        # validate_get_require-------------------------------------------
-        id_usr = request.GET.get('usr', -1)
+    form = ReadMessageForm(request.POST, id_usr)
 
-        try:
-            id_usr = int(id_usr)
-        except ValueError:
-            return JsonResponse({'response': 'incorrect POST request'}, status=400)
+    if form.is_valid():
+        status = form.save()
+        return JsonResponse({'response': 'OK' if status else 'Failed'})
 
-        if id_usr <= 0:
-            return JsonResponse({'response': 'incorrect POST request'}, status=400)
-        # --------------------------------------------------------------
-
-        form = ReadMessageForm(request.POST, id_usr)
-
-        if form.is_valid():
-            status = form.save()
-            return JsonResponse({'response': 'OK' if status else 'Failed'})
-
-        return JsonResponse({'response': form.errors}, status=400)
-
-    return JsonResponse({'response': 'permitted method POST'}, status=403)
+    return JsonResponse({'response': form.errors}, status=400)
 
 
-# ---GET---
+@require_http_methods(['GET'])
 def get_list_messages(request):
-    if request.method == 'GET':
+    id_usr = request.GET.get('usr')
+    id_chat = request.GET.get('chat')
+    if not id_usr.isdigit() or not id_chat.isdigit():
+        return JsonResponse({'response': []}, status=400)
 
-        # validate_get_require-------------------------------------------
-        id_usr = request.GET.get('usr', -1)
-        id_chat = request.GET.get('chat', -1)
+    message_list = Message.objects.filter(chat=id_chat, user=id_usr)
+    attachment_list = Attachment.objects.filter(chat=id_chat, user=id_usr)
+    return JsonResponse({'response': [[message.to_json(), attachment.to_json()]
+                                      for message, attachment in zip(message_list, attachment_list)]})
 
-        try:
-            id_usr = int(id_usr)
-            id_chat = int(id_chat)
-        except ValueError:
-            return JsonResponse({'response': 'incorrect GET request'}, status=400)
 
-        if id_usr <= 0 or id_chat <= 0:
-            return JsonResponse({'response': 'incorrect GET request'}, status=400)
-        # --------------------------------------------------------------
-        messages_list = message_list(id_chat, id_usr)
-
-        if messages_list:
-            return JsonResponse({'response': messages_list})
-
-        return JsonResponse({'response': 'empty'})
-
-    return JsonResponse({'response': 'permitted method GET'}, status=403)

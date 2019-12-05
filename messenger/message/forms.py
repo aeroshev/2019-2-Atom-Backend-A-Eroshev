@@ -5,6 +5,7 @@ from chats.models import Member
 
 class MessageForm(forms.Form):
     chat_id = forms.IntegerField(label='Chat id', required=True)
+    # choice
 
     def cleaned_chat_id(self):
         clear_chat_id = self.cleaned_data['chat_id']
@@ -47,6 +48,7 @@ class AddMessageForm(MessageForm):
 
 class ReadMessageForm(MessageForm):
     message_id = forms.IntegerField(label='Message id')
+    # Choice
 
     def __init__(self, get, user):
         super().__init(self, get)

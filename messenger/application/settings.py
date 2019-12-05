@@ -24,7 +24,7 @@ SECRET_KEY = '_#=e!$d7r47)n#&dq+h^@9jvzhu@dagtstpekjv7)8%6_y3h6g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -126,9 +126,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 try:
     from .local_settings import *
 except ImportError:
     pass
-
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']

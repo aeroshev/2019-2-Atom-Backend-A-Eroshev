@@ -1,56 +1,29 @@
 from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 from .forms import ChatForm
-from .helper import to_json
 from .models import Member
 
 
+@require_http_methods(['GET'])
 def chat_list(request):
-    if request.method == 'GET':
+    id_usr = request.GET.get('usr')
+    if not id_usr.isdigit():
+        return JsonResponse({'response': []}, status=400)
 
-        # validate_get_require-------------------------------------------
-        id_usr = request.GET.get('usr', -1)
-
-        try:
-            id_usr = int(id_usr)
-        except ValueError:
-            return JsonResponse({'response': 'incorrect GET request'}, status=400)
-
-        if id_usr <= 0:
-            return JsonResponse({'response': 'incorrect GET request'}, status=400)
-        # --------------------------------------------------------------
-
-        consists_of_chats = list(Member.objects.filter(user=id_usr))
-
-        chats = []
-        for member_in_chat in consists_of_chats:
-            chats.append(to_json(member_in_chat.chat))
-
-        return JsonResponse({'response': chats})
-
-    return JsonResponse({'response': 'permitted method GET'}, stattus=403)
+    consists_in_chats = Member.objects.filter(user=id_usr).select_related('chat')
+    return JsonResponse({'response': [user.chat.to_json() for user in consists_in_chats]})
 
 
+@require_http_methods(['POST'])
 def create_chat(request):
-    if request.method == 'POST':
+    # POST-------------------------------
+    id_usr = request.GET.get('usr')
+    if not id_usr.isdigit():
+        return JsonResponse({'response': []}, status=400)
+    # POST-------------------------------
 
-        # validate_get_require-------------------------------------------?
-        id_usr = request.GET.get('usr', -1)
-
-        try:
-            id_usr = int(id_usr)
-        except ValueError:
-            return JsonResponse({'response': 'incorrect POST request'}, status=400)
-
-        if id_usr <= 0:
-            return JsonResponse({'response': 'incorrect POST request'}, status=400)
-        # --------------------------------------------------------------
-
-        form = ChatForm(request.GET, id_usr)
-
-        if form.is_valid():
-            chat = form.save()
-            return JsonResponse({'response': to_json(chat)})
-
-        return JsonResponse({'error': form.errors}, status=400)
-
-    return JsonResponse({'response': 'permitted method POST'}, status=403)
+    form = ChatForm(request.GET, id_usr)
+    if form.is_valid():
+        chat = form.save()
+        return JsonResponse({'response': chat.to_json()})
+    return JsonResponse({'error': form.errors}, status=400)

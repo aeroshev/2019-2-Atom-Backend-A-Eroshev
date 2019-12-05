@@ -1,47 +1,26 @@
 from django.http import JsonResponse
+from  django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404
 from .models import User
-from .helper import to_json
 
 
+@require_http_methods(['GET'])
 def get_profile(request, user_id):
-    if request.method == 'GET':
-
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return JsonResponse({'response': 'Not found user with this id'}, status=400)
-
-        return JsonResponse(to_json(user))
-
-    return JsonResponse({'response': 'permitted method GET'}, status=403)
+    user = get_object_or_404(User, id=user_id)
+    return JsonResponse(user.to_json())
 
 
+@require_http_methods(['GET'])
 def create_profile(request):
-    if request.method == 'GET':
-        return JsonResponse({'response': 'ok'})
-
-    return JsonResponse({'response': 'permitted method GET'}, status=403)
+    return JsonResponse({'response': 'ok'})
 
 
+@require_http_methods(['GET'])
 def search(request):
-    if request.method == 'GET':
+    nick = request.GET.get('nick')
+    if nick is None:
+        return JsonResponse({'response': []}, status=400)
 
-        nick = request.GET.get('nick')
-
-        if nick:
-            users = list(User.objects.filter(username__icontains=nick))
-
-            if users:
-                matched_users = []
-
-                for user in users:
-                    matched_users.append(to_json(user))
-
-                return JsonResponse({'response': matched_users})
-
-            return JsonResponse({'response': 'no have matched users'})
-
-        return JsonResponse({'response': 'incorrect nick'}, status=400)
-
-    return JsonResponse({'response': 'permitted method GET'}, status=403)
+    users = User.objects.filter(username__icontains=nick)
+    return JsonResponse({'response': [user.to_json() for user in users]})
 
