@@ -1,4 +1,4 @@
-venv/
+messengerenv/
 *.pyc
 *.swo
 *.swp
