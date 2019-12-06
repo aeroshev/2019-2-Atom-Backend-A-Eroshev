@@ -18,8 +18,7 @@ def chat_list(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def create_chat(request):
-    print(request.POST)
-    form = ChatForm(request.POST)
+    form = ChatForm(request.POST, request.FILES)
     if form.is_valid():
         chat = form.save()
         return JsonResponse({'response': chat.to_json()})

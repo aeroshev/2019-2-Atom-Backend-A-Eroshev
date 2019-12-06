@@ -4,14 +4,15 @@ from users.models import User
 
 
 class ChatForm(forms.Form):
-    user = forms.ModelChoiceField(queryset=User.objects.all(), to_field_name="username", required=True)
+    user = forms.ModelChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
     title = forms.CharField(max_length=128, required=True)
     is_group = forms.BooleanField(required=False)
     avatar = forms.ImageField(required=False)
-    members = forms.ModelMultipleChoiceField(queryset=User.objects.all(), to_field_name="username", required=True)
+    members = forms.ModelMultipleChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
 
     def clean_title(self):
         title = self.cleaned_data['title']
+
         if not title:
             self.add_error('title', "title can't be empty")
         return title
@@ -28,14 +29,13 @@ class ChatForm(forms.Form):
 
     def save(self):
         data = self.cleaned_data
-        title_ = data['title']
+        title = data['title']
         group = data['is_group']
         members = data['members']
         avatar = data['avatar']
         creator = data['user']
 
-        new_chat = Chat.objects.create(title=title_, is_group_chat=group, chat_avatar=avatar, creator=creator)
-
+        new_chat = Chat.objects.create(title=title, is_group_chat=group, chat_avatar=avatar, creator=creator)
         Member.objects.create(user=creator, chat=new_chat)
         for member in members:
             Member.objects.create(user=member, chat=new_chat)

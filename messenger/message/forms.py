@@ -1,88 +1,59 @@
 from django import forms
 from .models import Message, Attachment
-from chats.models import Member
+from chats.models import Member, Chat
+from users.models import User
 
 
 class MessageForm(forms.Form):
-    chat_id = forms.IntegerField(label='Chat id', required=True)
-    # choice
-
-    def cleaned_chat_id(self):
-        clear_chat_id = self.cleaned_data['chat_id']
-
-        if clear_chat_id < 1:
-            self.add_error('chat_id', "id can't be lower 1")
-
-        return clear_chat_id
+    chat = forms.ModelChoiceField(queryset=Chat.objects.all(), to_field_name='id', required=True)
+    user = forms.ModelChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
 
 
 class AddMessageForm(MessageForm):
-    text = forms.CharField(label='Text', required=False)
-    attachment_type = forms.CharField(label='Type attachment', max_length=1, required=False)
-    url = forms.FileField(label='Path to attachment', required=False)
-
-    def __init__(self, get, file, user):
-        super().__init__(get, file)
-        self.user = user
-
-    def clean_attachment_type(self):
-        attachment_type = self.cleaned_data['attachment_type']
-
-        if len(attachment_type) > 1:
-            self.add_error('attachment_type', 'type must contain 1 symbol')
+    TYPE_ATTACH = (
+        ('I', 'IMAGE'),
+        ('D', 'DOCUMENT'),
+        ('A', 'AUDIO')
+    )
+    text = forms.CharField(required=False)
+    attachment_type = forms.ChoiceField(choices=TYPE_ATTACH, required=False)
+    file = forms.FileField(required=False)
+    image = forms.ImageField(required=False)
+    audio = forms.FileField(required=False)
 
     def save(self):
         data = self.cleaned_data
-        user = data.user
-        chat = data.chat
-        text = data.text
-        attachment_type = data.attachment_type
-        url = data.url
+        user = data['user']
+        chat = data['chat']
+        text = data['text']
+        attachment_type = data['attachment_type']
+        file = data['file']
+        image = data['image']
+        audio = data['audio']
 
         message = Message.objects.create(chat=chat, user=user, text=text)
-
-        Attachment.objects.create(message=message, type=attachment_type, url=url)
+        Attachment.objects.create(message=message, type=attachment_type, file=file, image=image, audio=audio)
 
         return message
 
 
 class ReadMessageForm(MessageForm):
-    message_id = forms.IntegerField(label='Message id')
-    # Choice
+    message = forms.ModelChoiceField(queryset=Message.objects.all(), to_field_name='id', required=True)
 
-    def __init__(self, get, user):
-        super().__init(self, get)
-        self.user = user
+    def cleaned_message(self):
+        message = self.cleaned_data['message']
+        chat = self.cleaned_data['chat']
 
-    def cleaned_message_id(self):
-        clear_message_id = self.cleaned_data['message_id']
-
-        if clear_message_id < 1:
-            self.add_error('message_id', "id can't be lower 1")
-
-        return clear_message_id
+        if message.chat != chat:
+            self.add_erorr('message', 'This message are not contain in this chat')
 
     def save(self):
-        status = False
-
         data = self.cleaned_data
-        message_id = data['message_id']
-        chat_id = data['chat']
-        reader = self.user
+        message = data['message']
+        chat = data['chat']
+        reader = data['user']
 
-        read_message = None
-        try:
-            read_message = Message.objects.get(id=message_id)
-        except Message.DoesNotExist:
-            status = False
+        member = Member.objects.filter(user=reader, chat=chat)
+        member.update(last_read_message=message)
 
-        if read_message:
-            try:
-                member = Member.objects.get(user=reader, chat=chat_id)
-                member.update(last_read_message=message_id)
-
-                status = True
-            except Member.DoesNotExist:
-                status = False
-
-        return status
+        return member

@@ -1,41 +1,27 @@
 from django.http import JsonResponse
 from  django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from .forms import AddMessageForm, ReadMessageForm
 from .models import Message, Attachment
 
 
+@csrf_exempt
 @require_http_methods(['POST'])
 def add_message(request):
-    # POST-------------------------------
-    id_usr = request.GET.get('usr')
-    if not id_usr.isdigit():
-        return JsonResponse({'response': 'incorrect POST request'}, status=400)
-    # POST-------------------------------
-
-    form = AddMessageForm(request.POST, request.FILES, id_usr)
-
+    form = AddMessageForm(request.POST, request.FILES)
     if form.is_valid():
         message = form.save()
-        if message:
-            return JsonResponse({'response': 'ok'})
-        return JsonResponse({'response': 'Failed'}, status=400)
+        return JsonResponse({'response': message})
     return JsonResponse({'error': form.errors}, status=400)
 
 
+@csrf_exempt
 @require_http_methods(['POST'])
 def read_message(request):
-    # POST-------------------------------
-    id_usr = request.GET.get('usr')
-    if not id_usr.isdigit():
-        return JsonResponse({'response': 'incorrect POST request'}, status=400)
-    # POST-------------------------------
-
-    form = ReadMessageForm(request.POST, id_usr)
-
+    form = ReadMessageForm(request.POST)
     if form.is_valid():
-        status = form.save()
-        return JsonResponse({'response': 'OK' if status else 'Failed'})
-
+        reader = form.save()
+        return JsonResponse({'response': reader})
     return JsonResponse({'response': form.errors}, status=400)
 
 
