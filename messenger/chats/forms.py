@@ -4,17 +4,11 @@ from users.models import User
 
 
 class ChatForm(forms.Form):
-    title = forms.CharField(label='Chat title', max_length=128, required=True)
-    is_group = forms.BooleanField(label='Group chat', required=False)
-    avatar = forms.FileField(label='Chat avatar', required=False)
-    # members = forms.ModelChoiceField(label='Members', required=False,
-
-                                     #count <2 >20
-
-
-    def __init__(self, get, user):
-        super().__init__(get)
-        self.user = user
+    user = forms.ModelChoiceField(queryset=User.objects.all(), to_field_name="username", required=True)
+    title = forms.CharField(max_length=128, required=True)
+    is_group = forms.BooleanField(required=False)
+    avatar = forms.ImageField(required=False)
+    members = forms.ModelMultipleChoiceField(queryset=User.objects.all(), to_field_name="username", required=True)
 
     def clean_title(self):
         title = self.cleaned_data['title']
@@ -22,15 +16,25 @@ class ChatForm(forms.Form):
             self.add_error('title', "title can't be empty")
         return title
 
+    def clean_members(self):
+        members = self.cleaned_data['members']
+        user = self.cleaned_data['user']
+
+        if not 1 < members.count() < 21:
+            self.add_error('members', 'Quantity members must be in interval 2-20')
+        if members.filter(username=user):
+            self.add_erorr('members', 'You already have member')
+        return members
+
     def save(self):
         data = self.cleaned_data
-        title = data['title']
-        group = data['group']
+        title_ = data['title']
+        group = data['is_group']
         members = data['members']
         avatar = data['avatar']
-        creator = self.user
+        creator = data['user']
 
-        new_chat = Chat.objects.create(title=title, is_group_chat=group, chat_avatar=avatar, creator=creator)
+        new_chat = Chat.objects.create(title=title_, is_group_chat=group, chat_avatar=avatar, creator=creator)
 
         Member.objects.create(user=creator, chat=new_chat)
         for member in members:

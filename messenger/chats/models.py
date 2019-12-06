@@ -18,7 +18,8 @@ class Chat(models.Model):
             'title': self.title,
             'is_group_chat': self.is_group_chat,
             'chat_avatar': str(self.chat_avatar),
-            'creator': self.creator,
+            'creator': self.creator.username,
+            'last_message': self.last_message.text if self.last_message else None
         }
 
 
@@ -30,3 +31,10 @@ class Member(models.Model):
     def __str__(self):
         return 'user ' + self.user.username + ' in chat ' + self.chat.title
 
+    def to_json(self):
+        return {
+            'id': self.id,
+            'user_id': self.user,
+            'chat_id': self.chat,
+            'last_read_message': self.last_read_message.text if self.last_read_message else None
+        }
