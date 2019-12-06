@@ -4,6 +4,6 @@ from django.urls import path
 
 urlpatterns = [
     path('', get_list_messages, name='get_list_messages'),
-    path('add/', add_message, name='add_message'),
+    path('new/', add_message, name='add_message'),
     path('read/', read_message, name='read_message')
 ]

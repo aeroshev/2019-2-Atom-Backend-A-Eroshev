@@ -21,10 +21,10 @@ class Message(models.Model):
 
     def to_json(self):
         return {
-            'chat_id': self.chat,
+            'chat_id': self.chat.id,
             'user_username': self.user.username,
             'text': self.text,
-            'added_at': self.added_at,
+            'added_at': self.added_at
         }
 
 
@@ -47,8 +47,8 @@ class Attachment(models.Model):
 
     def to_json(self):
         return {
-            'message_id': self.message,
-            'chat_id': self.chat,
+            'message_id': self.message.id,
+            'chat_id': self.chat.id,
             'user_username': self.user.username,
             'attachment type': self.type,
             'attachment file': self.file,

@@ -8,6 +8,15 @@ class MessageForm(forms.Form):
     chat = forms.ModelChoiceField(queryset=Chat.objects.all(), to_field_name='id', required=True)
     user = forms.ModelChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
 
+    def cleaned_user(self):
+        user = self.cleaned_data['user']
+        chat = self.cleaned_data['chat']
+
+        member = Member.objects.filter(chat=chat, user=user)
+        if not member:
+            self.add_error('user', 'This user are not contain in this chat')
+        return user
+
 
 class AddMessageForm(MessageForm):
     TYPE_ATTACH = (
@@ -32,7 +41,13 @@ class AddMessageForm(MessageForm):
         audio = data['audio']
 
         message = Message.objects.create(chat=chat, user=user, text=text)
-        Attachment.objects.create(message=message, type=attachment_type, file=file, image=image, audio=audio)
+        Attachment.objects.create(message=message,
+                                  chat=chat,
+                                  user=user,
+                                  type=attachment_type,
+                                  file=file,
+                                  image=image,
+                                  audio=audio)
 
         return message
 
@@ -46,6 +61,7 @@ class ReadMessageForm(MessageForm):
 
         if message.chat != chat:
             self.add_erorr('message', 'This message are not contain in this chat')
+        return message
 
     def save(self):
         data = self.cleaned_data
