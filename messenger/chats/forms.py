@@ -14,7 +14,7 @@ class ChatForm(forms.Form):
         members = self.cleaned_data['members']
         user = self.cleaned_data['user']
 
-        if not 1 < members.count() < 21:
+        if not 0 < members.count() < 20:
             self.add_error('members', 'Quantity members must be in interval 2-20')
         if members.filter(username=user.username):
             self.add_error('members', 'You already have member')

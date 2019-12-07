@@ -9,7 +9,8 @@ def user_directory_path(instance, filename):
 class Chat(models.Model):
     title = models.CharField(max_length=128, null=False, blank=False, default='NoName')
     is_group_chat = models.BooleanField(null=False, blank=False, default=False)
-    chat_avatar = models.ImageField(upload_to=user_directory_path, null=False, blank=False, default='default.png')
+    chat_avatar = models.ImageField(upload_to=user_directory_path,
+                                    null=False, blank=False, default='default/default.png')
     last_message = models.OneToOneField('message.Message', on_delete=models.SET_NULL, null=True, related_name='Chat')
     creator = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 

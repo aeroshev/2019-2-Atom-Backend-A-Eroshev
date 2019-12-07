@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from  django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from .forms import AddMessageForm, ReadMessageForm
 from .models import Message, Attachment
@@ -11,7 +11,7 @@ def add_message(request):
     form = AddMessageForm(request.POST, request.FILES)
     if form.is_valid():
         message = form.save()
-        return JsonResponse({'response': message.to_json()})
+        return JsonResponse({'response': [message[0].to_json(), message[1].to_json()]})
     return JsonResponse({'error': form.errors}, status=400)
 
 

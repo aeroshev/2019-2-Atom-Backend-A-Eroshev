@@ -8,7 +8,7 @@ class MessageForm(forms.Form):
     chat = forms.ModelChoiceField(queryset=Chat.objects.all(), to_field_name='id', required=True)
     user = forms.ModelChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
 
-    def cleaned_user(self):
+    def clean_user(self):
         user = self.cleaned_data['user']
         chat = self.cleaned_data['chat']
 
@@ -41,28 +41,28 @@ class AddMessageForm(MessageForm):
         audio = data['audio']
 
         message = Message.objects.create(chat=chat, user=user, text=text)
-        Attachment.objects.create(message=message,
-                                  chat=chat,
-                                  user=user,
-                                  type=attachment_type,
-                                  file=file,
-                                  image=image,
-                                  audio=audio)
+        attachment = Attachment.objects.create(message=message,
+                                               chat=chat,
+                                               user=user,
+                                               type=attachment_type,
+                                               file=file,
+                                               image=image,
+                                               audio=audio)
         tmp = Chat.objects.select_related('last_message').filter(id=chat.id)
         tmp.update(last_message=message)
 
-        return message
+        return tuple([message, attachment])
 
 
 class ReadMessageForm(MessageForm):
     message = forms.ModelChoiceField(queryset=Message.objects.all(), to_field_name='id', required=True)
 
-    def cleaned_message(self):
+    def clean_message(self):
         message = self.cleaned_data['message']
         chat = self.cleaned_data['chat']
 
         if message.chat != chat:
-            self.add_erorr('message', 'This message are not contain in this chat')
+            self.add_error('message', 'This message are not contain in this chat')
         return message
 
     def save(self):
