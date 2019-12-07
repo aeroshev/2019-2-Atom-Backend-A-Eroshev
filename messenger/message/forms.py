@@ -12,7 +12,7 @@ class MessageForm(forms.Form):
         user = self.cleaned_data['user']
         chat = self.cleaned_data['chat']
 
-        member = Member.objects.filter(chat=chat, user=user)
+        member = Member.objects.select_related('chat', 'user').filter(chat=chat, user=user)
         if not member:
             self.add_error('user', 'This user are not contain in this chat')
         return user
@@ -48,6 +48,8 @@ class AddMessageForm(MessageForm):
                                   file=file,
                                   image=image,
                                   audio=audio)
+        tmp = Chat.objects.select_related('last_message').filter(id=chat.id)
+        tmp.update(last_message=message)
 
         return message
 
@@ -69,7 +71,7 @@ class ReadMessageForm(MessageForm):
         chat = data['chat']
         reader = data['user']
 
-        member = Member.objects.filter(user=reader, chat=chat)
+        member = Member.objects.select_related('user', 'chat', 'last_read_message').filter(user=reader, chat=chat)
         member.update(last_read_message=message)
 
-        return member
+        return member[0]

@@ -3,7 +3,6 @@ from  django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from .forms import AddMessageForm, ReadMessageForm
 from .models import Message, Attachment
-from chats.models import Member
 
 
 @csrf_exempt

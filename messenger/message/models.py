@@ -10,8 +10,8 @@ def user_directory_path(instance, filename):
 class Message(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    text = models.TextField('Text of message', null=True, blank=True, default='')
-    added_at = models.DateTimeField('Time published', null=False, blank=False, auto_now_add=True)
+    text = models.TextField(null=True, blank=True, default='')
+    added_at = models.DateTimeField(null=False, blank=False, auto_now_add=True)
 
     class Meta:
         ordering = ('-added_at',)
@@ -37,7 +37,7 @@ class Attachment(models.Model):
     message = models.ForeignKey(Message, on_delete=models.CASCADE)
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    type = models.CharField('Type attachment', max_length=1, choices=TYPE_ATTACH, null=False, blank=False, default='D')
+    type = models.CharField(max_length=1, choices=TYPE_ATTACH, null=False, blank=False, default='D')
     file = models.FileField(upload_to=user_directory_path, max_length=(10 * 1024 * 1024), null=True)
     image = models.ImageField(upload_to=user_directory_path, max_length=(5 * 1024 * 1024), null=True)
     audio = models.FileField(upload_to=user_directory_path, max_length=(5 * 1024 * 1024), null=True)
@@ -51,7 +51,7 @@ class Attachment(models.Model):
             'chat_id': self.chat.id,
             'user_username': self.user.username,
             'attachment type': self.type,
-            'attachment file': self.file,
-            'attachment image': self.image,
-            'attachment audio': self.audio
+            'attachment file': str(self.file),
+            'attachment image': str(self.image),
+            'attachment audio': str(self.audio)
         }

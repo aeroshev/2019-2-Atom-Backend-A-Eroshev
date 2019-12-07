@@ -10,22 +10,23 @@ class ChatForm(forms.Form):
     avatar = forms.ImageField(required=False)
     members = forms.ModelMultipleChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
 
-    def clean_title(self):
-        title = self.cleaned_data['title']
-
-        if not title:
-            self.add_error('title', "title can't be empty")
-        return title
-
     def clean_members(self):
         members = self.cleaned_data['members']
         user = self.cleaned_data['user']
 
         if not 1 < members.count() < 21:
             self.add_error('members', 'Quantity members must be in interval 2-20')
-        if members.filter(username=user):
-            self.add_erorr('members', 'You already have member')
+        if members.filter(username=user.username):
+            self.add_error('members', 'You already have member')
         return members
+
+    def clean(self):
+        user = self.cleaned_data['user']
+        title = self.cleaned_data['title']
+
+        if Chat.objects.select_related('creator').filter(title=title, creator=user):
+            self.add_error('title', 'This chat already exist')
+        return self.cleaned_data
 
     def save(self):
         data = self.cleaned_data
@@ -39,5 +40,4 @@ class ChatForm(forms.Form):
         Member.objects.create(user=creator, chat=new_chat)
         for member in members:
             Member.objects.create(user=member, chat=new_chat)
-
         return new_chat

@@ -8,7 +8,7 @@ def user_directory_path(instance, filename):
 
 class User(AbstractUser):
     avatar = models.ImageField(upload_to=user_directory_path, null=True, default='default.png')
-    bio = models.TextField('User bio', null=True, blank=True)
+    bio = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return str(self.id) + self.username
