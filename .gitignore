@@ -3,4 +3,4 @@ messengerenv/
 *.swo
 *.swp
 /messenger/.idea
-/messenger/application/settings.py
+/messenger/application/settings.py/
