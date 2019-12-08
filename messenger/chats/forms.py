@@ -25,6 +25,14 @@ class ChatForm(forms.Form):
             self.add_error('members', 'You already have member')
         return members
 
+    def clean_is_group(self):
+        is_group = self.cleaned_data['is_group']
+        members = self.cleaned_data['members']
+
+        if not is_group and members.count() > 2:
+            self.add_error('is_group', 'Quantity of members exceed 2 members for a not group chat')
+        return is_group
+
     def clean(self):
         # user = self.cleaned_data['user']
         user = self.user

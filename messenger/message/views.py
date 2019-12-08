@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from .forms import AddMessageForm, ReadMessageForm
 from .models import Message, Attachment
+from chats.models import Member
 
 
 @csrf_exempt
@@ -31,13 +32,16 @@ def read_message(request):
 @login_required
 @require_http_methods(['GET'])
 def get_list_messages(request):
-    id_chat = request.GET.get('chat')
-    if not id_chat.isdigit():
+    chat_id = request.GET.get('chat')
+    if chat_id is None or not chat_id.isdigit():
         return JsonResponse({'response': []}, status=400)
+    user_id = request.user.id
 
-    message_list = Message.objects.filter(chat=id_chat, user=request.user.id)
-    attachment_list = Attachment.objects.filter(chat=id_chat, user=request.user.id)
-    return JsonResponse({'response': [[message.to_json(), attachment.to_json()]
-                                      for message, attachment in zip(message_list, attachment_list)]})
-
-
+    member = Member.objects.select_related('chat', 'user').filter(chat=chat_id, user=user_id)
+    if member:
+        message_list = Message.objects.select_related('chat', 'user').filter(chat=chat_id, user=user_id)
+        attachment_list = Attachment.objects.select_related('chat', 'user').filter(chat=chat_id, user=user_id)
+        return JsonResponse({'response': [[message.to_json(), attachment.to_json()]
+                                          for message, attachment in zip(message_list, attachment_list)]})
+    else:
+        return JsonResponse({'response': []}, status=400)

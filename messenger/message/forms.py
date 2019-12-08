@@ -37,6 +37,20 @@ class AddMessageForm(MessageForm):
     image = forms.ImageField(required=False)
     audio = forms.FileField(required=False)
 
+    def clean_attachment_type(self):
+        attachment_type = self.cleaned_data['attachment_type']
+        image = self.cleaned_data['image']
+        file = self.cleaned_data['file']
+        audio = self.cleaned_data['audio']
+
+        if attachment_type == 'I' and image is None:
+            self.add_error('attachment_type', 'Field image empty')
+        if attachment_type == 'D' and file is None:
+            self.add_error('attachment_type', 'Field file empty')
+        if attachment_type == 'A' and audio is None:
+            self.add_error('attachment_type', 'Field audio empty')
+        return attachment_type
+
     def save(self):
         data = self.cleaned_data
         # user = data['user']
