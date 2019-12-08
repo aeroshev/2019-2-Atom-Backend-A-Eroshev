@@ -6,16 +6,23 @@ from users.models import User
 
 class MessageForm(forms.Form):
     chat = forms.ModelChoiceField(queryset=Chat.objects.all(), to_field_name='id', required=True)
-    user = forms.ModelChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
+    # user = forms.ModelChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
 
-    def clean_user(self):
-        user = self.cleaned_data['user']
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+    # def clean_user(self):
+    def clean(self):
+        # user = self.cleaned_data['user']
+        user = self.user
         chat = self.cleaned_data['chat']
 
         member = Member.objects.select_related('chat', 'user').filter(chat=chat, user=user)
         if not member:
             self.add_error('user', 'This user are not contain in this chat')
-        return user
+        return self.cleaned_data
+        # return user
 
 
 class AddMessageForm(MessageForm):
@@ -32,7 +39,8 @@ class AddMessageForm(MessageForm):
 
     def save(self):
         data = self.cleaned_data
-        user = data['user']
+        # user = data['user']
+        user = self.user
         chat = data['chat']
         text = data['text']
         attachment_type = data['attachment_type']
@@ -69,7 +77,8 @@ class ReadMessageForm(MessageForm):
         data = self.cleaned_data
         message = data['message']
         chat = data['chat']
-        reader = data['user']
+        # reader = data['user']
+        reader = self.user
 
         member = Member.objects.select_related('user', 'chat', 'last_read_message').filter(user=reader, chat=chat)
         member.update(last_read_message=message)

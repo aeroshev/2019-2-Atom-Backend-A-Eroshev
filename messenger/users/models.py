@@ -21,6 +21,6 @@ class User(AbstractUser):
             'last_name': self.last_name,
             'email': self.email,
             'is_active': self.is_active,
-            'avatar': self.avatar,
+            'avatar': str(self.avatar),
             'bio': self.bio,
         }

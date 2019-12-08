@@ -4,15 +4,20 @@ from users.models import User
 
 
 class ChatForm(forms.Form):
-    user = forms.ModelChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
+    # user = forms.ModelChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
     title = forms.CharField(max_length=128, required=True)
     is_group = forms.BooleanField(required=False)
     avatar = forms.ImageField(required=False)
     members = forms.ModelMultipleChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
 
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
     def clean_members(self):
         members = self.cleaned_data['members']
-        user = self.cleaned_data['user']
+        # user = self.cleaned_data['user']
+        user = self.user
 
         if not 0 < members.count() < 20:
             self.add_error('members', 'Quantity members must be in interval 2-20')
@@ -21,7 +26,8 @@ class ChatForm(forms.Form):
         return members
 
     def clean(self):
-        user = self.cleaned_data['user']
+        # user = self.cleaned_data['user']
+        user = self.user
         title = self.cleaned_data['title']
 
         if Chat.objects.select_related('creator').filter(title=title, creator=user):
@@ -34,7 +40,8 @@ class ChatForm(forms.Form):
         group = data['is_group']
         members = data['members']
         avatar = data['avatar']
-        creator = data['user']
+        # creator = data['user']
+        creator = self.user
 
         new_chat = Chat.objects.create(title=title, is_group_chat=group, chat_avatar=avatar, creator=creator)
         Member.objects.create(user=creator, chat=new_chat)
