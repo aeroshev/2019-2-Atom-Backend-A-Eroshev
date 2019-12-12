@@ -14,25 +14,6 @@ class ChatForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.user = user
 
-    def clean_members(self):
-        members = self.cleaned_data['members']
-        # user = self.cleaned_data['user']
-        user = self.user
-
-        if not 0 < members.count() < 20:
-            self.add_error('members', 'Quantity members must be in interval 2-20')
-        if members.filter(username=user.username):
-            self.add_error('members', 'You already have member')
-        return members
-
-    def clean_is_group(self):
-        is_group = self.cleaned_data['is_group']
-        members = self.cleaned_data['members']
-
-        if not is_group and members.count() > 2:
-            self.add_error('is_group', 'Quantity of members exceed 2 members for a not group chat')
-        return is_group
-
     def clean(self):
         # user = self.cleaned_data['user']
         user = self.user
@@ -41,6 +22,21 @@ class ChatForm(forms.Form):
         if Chat.objects.select_related('creator').filter(title=title, creator=user):
             self.add_error('title', 'This chat already exist')
         return self.cleaned_data
+
+    def clean_members(self):
+        members = self.cleaned_data['members']
+        # user = self.cleaned_data['user']
+        is_group = self.cleaned_data['is_group']
+        user = self.user
+
+        if not 0 < members.count() < 20:
+            self.add_error('members', 'Quantity members must be in interval 2-20')
+        if members.filter(username=user.username):
+            self.add_error('members', 'You already have member')
+        if not is_group and members.count() > 2:
+            self.add_error('is_group', 'Quantity of members exceed 2 members for a not group chat')
+
+        return members
 
     def save(self):
         data = self.cleaned_data
