@@ -13,7 +13,7 @@ class MessageForm(forms.Form):
         self.user = user
 
     # def clean_user(self):
-    def clean(self):
+    def clean_chat(self):
         # user = self.cleaned_data['user']
         user = self.user
         chat = self.cleaned_data['chat']
@@ -21,35 +21,32 @@ class MessageForm(forms.Form):
         member = Member.objects.select_related('chat', 'user').filter(chat=chat, user=user)
         if not member:
             self.add_error('user', 'This user are not contain in this chat')
-        return self.cleaned_data
-        # return user
+        # return self.cleaned_data
+        return chat
 
 
 class AddMessageForm(MessageForm):
-    TYPE_ATTACH = (
-        ('I', 'IMAGE'),
-        ('D', 'DOCUMENT'),
-        ('A', 'AUDIO')
-    )
     text = forms.CharField(required=False)
-    attachment_type = forms.ChoiceField(choices=TYPE_ATTACH, required=False)
+    attachment_type = forms.CharField(max_length=8, required=False)
     file = forms.FileField(required=False)
     image = forms.ImageField(required=False)
     audio = forms.FileField(required=False)
 
-    def clean_attachment_type(self):
+    def clean(self):
         attachment_type = self.cleaned_data['attachment_type']
         image = self.cleaned_data['image']
         file = self.cleaned_data['file']
         audio = self.cleaned_data['audio']
+        print(attachment_type)
 
-        if attachment_type == 'I' and image is None:
-            self.add_error('attachment_type', 'Field image empty')
-        if attachment_type == 'D' and file is None:
-            self.add_error('attachment_type', 'Field file empty')
-        if attachment_type == 'A' and audio is None:
-            self.add_error('attachment_type', 'Field audio empty')
-        return attachment_type
+        if attachment_type:
+            if attachment_type == 'image' and image is None:
+                self.add_error('attachment_type', 'Field image empty')
+            if attachment_type == 'document' and file is None:
+                self.add_error('attachment_type', 'Field file empty')
+            if attachment_type == 'audio' and audio is None:
+                self.add_error('attachment_type', 'Field audio empty')
+        return self.cleaned_data
 
     def save(self):
         data = self.cleaned_data
@@ -62,6 +59,7 @@ class AddMessageForm(MessageForm):
         image = data['image']
         audio = data['audio']
 
+        print(chat)
         message = Message.objects.create(chat=chat, user=user, text=text)
         attachment = Attachment.objects.create(message=message,
                                                chat=chat,

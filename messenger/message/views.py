@@ -26,7 +26,7 @@ def read_message(request):
     if form.is_valid():
         reader = form.save()
         return JsonResponse({'response': reader.to_json()})
-    return JsonResponse({'response': form.errors}, status=400)
+    return JsonResponse({'error': form.errors}, status=400)
 
 
 @login_required
@@ -39,9 +39,10 @@ def get_list_messages(request):
 
     member = Member.objects.select_related('chat', 'user').filter(chat=chat_id, user=user_id)
     if member:
-        message_list = Message.objects.select_related('chat', 'user').filter(chat=chat_id, user=user_id)
-        attachment_list = Attachment.objects.select_related('chat', 'user').filter(chat=chat_id, user=user_id)
-        return JsonResponse({'response': [[message.to_json(), attachment.to_json()]
-                                          for message, attachment in zip(message_list, attachment_list)]})
+        message_list = Message.objects.select_related('chat').filter(chat=chat_id)
+        attachment_list = Attachment.objects.select_related('chat').filter(chat=chat_id)
+        return JsonResponse({'response': {'current_user_id': user_id, 'messages_list':
+                            [{'message': message.to_json(), 'attachment': attachment.to_json()}
+                                for message, attachment in zip(message_list, attachment_list)]}})
     else:
         return JsonResponse({'response': []}, status=400)

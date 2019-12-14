@@ -22,10 +22,9 @@ from auth import views as views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('login/', views.login, name='login'),
+    path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('social_auth/', include('social_django.urls', namespace='social')),
-    path('register', views.register, name='register'),
     path('admin/', admin.site.urls),
     path('chat/', include('chats.urls')),
     path('user/', include('users.urls')),

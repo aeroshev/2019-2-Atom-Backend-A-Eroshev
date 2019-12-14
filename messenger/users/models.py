@@ -11,7 +11,7 @@ class User(AbstractUser):
     bio = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return str(self.id) + self.username
+        return self.username
 
     def to_json(self):
         return {
