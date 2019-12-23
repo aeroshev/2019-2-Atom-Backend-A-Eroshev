@@ -14,7 +14,8 @@ def add_message(request):
     form = AddMessageForm(request.user, request.POST, request.FILES)
     if form.is_valid():
         message = form.save()
-        return JsonResponse({'response': [message[0].to_json(), message[1].to_json()]})
+        return JsonResponse({'response': {'message': message['message'].to_json(),
+                                          'attachment': message['attachment'].to_json()}})
     return JsonResponse({'error': form.errors}, status=400)
 
 

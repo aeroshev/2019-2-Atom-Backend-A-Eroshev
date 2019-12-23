@@ -4,7 +4,6 @@ from users.models import User
 
 
 class ChatForm(forms.Form):
-    # user = forms.ModelChoiceField(queryset=User.objects.all(), to_field_name='username', required=True)
     title = forms.CharField(max_length=128, required=True)
     is_group = forms.BooleanField(required=False)
     avatar = forms.ImageField(required=False)
@@ -15,7 +14,6 @@ class ChatForm(forms.Form):
         self.user = user
 
     def clean(self):
-        # user = self.cleaned_data['user']
         user = self.user
         title = self.cleaned_data['title']
 
@@ -25,7 +23,6 @@ class ChatForm(forms.Form):
 
     def clean_members(self):
         members = self.cleaned_data['members']
-        # user = self.cleaned_data['user']
         is_group = self.cleaned_data['is_group']
         user = self.user
 
@@ -44,7 +41,6 @@ class ChatForm(forms.Form):
         group = data['is_group']
         members = data['members']
         avatar = data['avatar']
-        # creator = data['user']
         creator = self.user
 
         new_chat = Chat.objects.create(title=title, is_group_chat=group, chat_avatar=avatar, creator=creator)
