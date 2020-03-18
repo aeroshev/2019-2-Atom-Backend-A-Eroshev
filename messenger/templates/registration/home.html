@@ -4,7 +4,6 @@
 <div class="row">
     <div class="col-sm-12 mb-3">
         <h4 class="text-center"> Welcome {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %} </h4>
-        <a class="text-center" href="{% url 'logout' %}">Log out</a>
     </div>
 </div>
 {% endblock %}
